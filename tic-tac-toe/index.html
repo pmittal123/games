@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tic-tac-toe</title>
+    <link rel="stylesheet" href="game.css">
+</head>
+<body>
+    <div class="background-icons">
+        <div class="icon">⭕</div>
+        <div class="icon">❌</div>
+        <div class="icon">⭕</div>
+        <div class="icon">❌</div>
+    </div>
+    <div class="start">
+        <div class="form-container">
+            <h1>Welcome to Tic Tac Toe</h1>
+
+            <form>
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="player1-name" 
+                        placeholder="Enter Player 1 Name" 
+                        required 
+                    />
+                </div>
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        placeholder="Enter Player 2 Name" 
+                        id="player2-name" 
+                        required 
+                    />
+                </div>
+                <button type="submit" class="start-btn">Start Game</button>
+            </form>
+        </div>
+    </div>
+    <div class="con">
+        <p>tic-tac-toe</p>
+        <div class="game">
+            <button id="gam"></button>
+            <button id="gam"></button>
+            <button id="gam"></button>
+            <button id="gam"></button>
+            <button id="gam"></button>
+            <button id="gam"></button>
+            <button id="gam"></button>
+            <button id="gam"></button>
+            <button id="gam"></button>
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+            <div class="line4"></div>
+        </div>
+        <div class="player-box left">
+            <span class="player-name">Player1 X</span>
+            <span class="player-points">0</span>
+        </div>
+        <div class="player-box right">
+            <span class="player-name">Player2 O</span>
+            <span class="player-points">0</span>
+        </div>
+        <div class="button-container">
+            <button class="reset-btn">Reset Game</button>
+            <button class="stop-btn">Stop Game</button>
+        </div>
+    </div>
+    <div class="result">
+        <h1>Tic Tac Toe</h1>
+        <div class="scoreboard">
+            <div class="score">Player 1: <span id="player1-score">0</span></div>
+            <div class="score">Player 2: <span id="player2-score">0</span></div>
+        </div>
+        <div class="result-buttons">
+            <button class="play-again-btn">Play Again</button>
+            <button class="main-menu-btn">Main Menu</button>
+        </div>
+    </div>
+    <script>
+        // Simple name variables
+        let p1Name = '';
+        let p2Name = '';
+
+        // Add these variables at the top of your script
+        let p1Score = 0;
+        let p2Score = 0;
+
+        // Get form elements
+        const p1Input = document.getElementById('player1-name');
+        const p2Input = document.getElementById('player2-name');
+        const form = document.querySelector('form');
+
+        //pattern for the win 
+        const winPatterns = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Horizontal
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Vertical
+            [0, 4, 8], [2, 4, 6]            // Diagonal
+        ];
+
+        // button elements
+        const buttons = document.querySelectorAll('.game button');
+        let turn = "true";
+
+        const checkwin = () => {
+            let isWin = false;
+            let isDraw = true;
+
+            // Check for win
+            for (let pattern of winPatterns) {
+                let pos1 = buttons[pattern[0]].innerText;
+                let pos2 = buttons[pattern[1]].innerText;
+                let pos3 = buttons[pattern[2]].innerText;
+                
+                if(pos1 != "" && pos2 != "" && pos3 != "") {
+                    if(pos1 == pos2 && pos2 == pos3) {
+                        isWin = true;
+                        // Show winner message and update score
+                        setTimeout(() => {
+                            // Update scores in both game and result screens
+                            if (pos1 === "X") {
+                                // Update player 1 score
+                                const p1GameScore = document.querySelector('.player-box.left .player-points');
+                                const p1ResultScore = document.getElementById('player1-score');
+                                const newScore = parseInt(p1GameScore.textContent) + 1;
+                                p1GameScore.textContent = newScore;
+                                p1ResultScore.textContent = newScore;
+                            } else {
+                                // Update player 2 score
+                                const p2GameScore = document.querySelector('.player-box.right .player-points');
+                                const p2ResultScore = document.getElementById('player2-score');
+                                const newScore = parseInt(p2GameScore.textContent) + 1;
+                                p2GameScore.textContent = newScore;
+                                p2ResultScore.textContent = newScore;
+                            }
+                            // Auto reset the game board
+                            resetGame();
+                        }, 100);
+                        return;
+                    }
+                }
+            }
+
+            // Check for draw
+            buttons.forEach(button => {
+                if(button.innerText === "") {
+                    isDraw = false;
+                }
+            });
+
+            if(isDraw && !isWin) {
+                setTimeout(() => {
+                    resetGame();
+                }, 100);
+            }
+        };
+
+        // Add reset game function
+        const resetGame = () => {
+            buttons.forEach(button => {
+                button.innerHTML = '';
+                button.style.color = '';
+                button.disabled = false;
+            });
+            turn = "true";
+        };
+
+        // Update your click event listener to use the new checkwin function
+        buttons.forEach((box) => {
+            box.addEventListener('click', () => {
+                if(turn === "true") {
+                    box.innerHTML = "X";
+                    box.style.color = "#0e81ae";
+                    turn = "false";
+                } else {
+                    box.innerHTML = "O";
+                    box.style.color = "#ff0000";
+                    turn = "true";
+                }
+                box.disabled = true;
+                checkwin();  // Note the corrected function name
+            });
+        });
+
+        const rBtn = document.querySelector('.reset-btn');
+        rBtn.addEventListener('click', function() {
+            // Reset all game buttons (clear X's and O's)
+            buttons.forEach(button => {
+                button.innerHTML = '';
+                button.style.color = '';  // Reset color
+                button.disabled = false;  // Enable the button again
+            });
+            
+            // Reset turn to start with X
+            turn = "true";
+            
+            // Keep scores and player names as they are
+            // No need to modify player boxes or display properties
+        });
+
+        // Add events to both inputs
+        [p1Input, p2Input].forEach(input => {
+            // Save name while typing
+            input.addEventListener('input', function() {
+                if (this.id === 'player1-name') {
+                    p1Name = this.value;
+                } else {
+                    p2Name = this.value;
+                }
+            });
+
+            // Style on focus
+            input.addEventListener('focus', function() {
+                this.style.backgroundColor = "#000000e1";
+                this.style.color = "#fff";
+                this.style.border = "1px solid #fff";
+                this.style.boxShadow = "0 0 5px #fff";
+                this.style.height = "40px";
+            });
+
+            // Style on blur
+            input.addEventListener('blur', function() {
+                this.style.backgroundColor = "#fff";
+                this.style.color = "#0e81ae";
+                this.style.border = "2px solid #0e81ae";
+                this.style.boxShadow = "none";
+                this.style.height = "30px";
+            });
+        });
+
+        // Handle form submit
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get names
+            const name1 = p1Input.value.trim();
+            const name2 = p2Input.value.trim();
+            
+            if (!name1 || !name2) {
+                alert('Enter both names!');
+                return;
+            }
+            
+            // Save names
+            p1Name = name1;
+            p2Name = name2;
+            
+            // Show game, hide form
+            document.querySelector('.start').style.display = 'none';
+            document.querySelector('.con').style.display = 'flex';
+            
+            // Set player names
+            document.querySelector('.player-box.left .player-name').textContent = p1Name + ' X';
+            document.querySelector('.player-box.right .player-name').textContent = p2Name + ' O';
+        });
+
+        // Update the stop button event listener
+        const stopBtn = document.querySelector('.stop-btn');
+        stopBtn.addEventListener('click', function() {
+            // Hide game screen
+            document.querySelector('.con').style.display = 'none';
+            // Hide start screen
+            document.querySelector('.start').style.display = 'none';
+            // Show result screen
+            document.querySelector('.result').style.display = 'flex';
+            
+            // Get final scores
+            p1Score = parseInt(document.querySelector('.player-box.left .player-points').textContent);
+            p2Score = parseInt(document.querySelector('.player-box.right .player-points').textContent);
+            
+            // Update result screen with player names and scores
+            document.querySelector('.score:first-child').innerHTML = 
+                `${p1Name}: <span id="player1-score">${p1Score}</span>`;
+            document.querySelector('.score:last-child').innerHTML = 
+                `${p2Name}: <span id="player2-score">${p2Score}</span>`;
+            
+            // Determine and highlight winner
+            const winner = document.createElement('h2');
+            winner.className = 'winner-announcement';
+            
+            if (p1Score > p2Score) {
+                winner.textContent = `${p1Name} Wins!`;
+                document.querySelector('.score:first-child').classList.add('winner');
+            } else if (p2Score > p1Score) {
+                winner.textContent = `${p2Name} Wins!`;
+                document.querySelector('.score:last-child').classList.add('winner');
+            } else {
+                winner.textContent = "It's a Tie!";
+            }
+            
+            // Add winner announcement to result screen
+            document.querySelector('.result h1').insertAdjacentElement('afterend', winner);
+        });
+
+        const resetBtn = document.querySelector('.reset-btn');
+        resetBtn.addEventListener('click', function() {
+            // Reset all game buttons (clear X's and O's)
+            buttons.forEach(button => {
+                button.innerHTML = '';
+                button.style.color = '';  // Reset color
+            });
+            
+            // Reset turn to start with X
+            turn = "true";
+            
+            // Keep scores and player names as they are
+            // No need to modify player boxes or display properties
+        });
+
+        // Add this inside your existing script tag
+        const playAgainBtn = document.querySelector('.play-again-btn');
+
+        playAgainBtn.addEventListener('click', () => {
+            // Reset game state
+            p1Score = 0;
+            p2Score = 0;
+            
+            // Reset score displays
+            document.querySelector('.player-box.left .player-points').textContent = '0';
+            document.querySelector('.player-box.right .player-points').textContent = '0';
+            document.getElementById('player1-score').textContent = '0';
+            document.getElementById('player2-score').textContent = '0';
+            
+            // Reset game board
+            resetGame();
+            
+            // Hide result screen and show game screen
+            document.querySelector('.result').style.display = 'none';
+            document.querySelector('.con').style.display = 'flex';
+        });
+
+        // Add this after your play-again button code
+        const mainMenuBtn = document.querySelector('.main-menu-btn');
+
+        mainMenuBtn.addEventListener('click', () => {
+            // Reset game state
+            p1Score = 0;
+            p2Score = 0;
+            
+            // Reset score displays
+            document.querySelector('.player-box.left .player-points').textContent = '0';
+            document.querySelector('.player-box.right .player-points').textContent = '0';
+            document.getElementById('player1-score').textContent = '0';
+            document.getElementById('player2-score').textContent = '0';
+            
+            // Reset game board
+            resetGame();
+            
+            // Reset player name inputs
+            p1Input.value = '';
+            p2Input.value = '';
+            p1Name = '';
+            p2Name = '';
+            
+            // Hide result screen and show start screen
+            document.querySelector('.result').style.display = 'none';
+            document.querySelector('.start').style.display = 'flex';
+        });
+
+    </script>
+</body>
+</html>
