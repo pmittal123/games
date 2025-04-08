@@ -461,10 +461,24 @@ p {
 .main-menu-btn:hover {
     transform: translateY(-2px);
     opacity: 0.9;
+    
 }
 
 /* Combined active states */
 .play-again-btn:active,
 .main-menu-btn:active {
     transform: translateY(-1px);
+}
+
+.game button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.game button:disabled {
+    cursor: not-allowed;
 }

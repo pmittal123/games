@@ -88,6 +88,9 @@
         let p1Score = 0;
         let p2Score = 0;
 
+        // Add this variable at the top of your script with other variables
+        let firstTurn = "true"; // Keeps track of who starts each game
+
         // Get form elements
         const p1Input = document.getElementById('player1-name');
         const p2Input = document.getElementById('player2-name');
@@ -102,7 +105,7 @@
 
         // button elements
         const buttons = document.querySelectorAll('.game button');
-        let turn = "true";
+        let turn = "true"; // true for X's turn, false for O's turn
 
         const checkwin = () => {
             let isWin = false;
@@ -162,25 +165,45 @@
             buttons.forEach(button => {
                 button.innerHTML = '';
                 button.style.color = '';
+                button.style.display = 'flex';  // Add this line
+                button.style.justifyContent = 'center';  // Add this line
+                button.style.alignItems = 'center';  // Add this line
                 button.disabled = false;
             });
-            turn = "true";
+            // Swap the starting player each game
+            firstTurn = firstTurn === "true" ? "false" : "true";
+            turn = firstTurn; // Set current turn to whoever starts
         };
 
         // Update your click event listener to use the new checkwin function
         buttons.forEach((box) => {
             box.addEventListener('click', () => {
-                if(turn === "true") {
-                    box.innerHTML = "X";
-                    box.style.color = "#0e81ae";
-                    turn = "false";
-                } else {
-                    box.innerHTML = "O";
-                    box.style.color = "#ff0000";
-                    turn = "true";
+                if (box.innerHTML === "") { // Only allow move if box is empty
+                    if (turn === "true") {
+                        box.innerHTML = "X";
+                        box.style.color = "#0e81ae";
+                        box.style.display = "flex"; // Add this line
+                        box.style.justifyContent = "center"; // Add this line
+                        box.style.alignItems = "center"; // Add this line
+                        turn = "false";
+                        // Update turn display
+                        document.querySelector('.player-box.right').style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                        document.querySelector('.player-box.left').style.backgroundColor = 'transparent';
+                    } else {
+                        box.innerHTML = "O";
+                        box.style.color = "#ff0000";
+                        box.style.display = "flex"; // Add this line
+                        box.style.justifyContent = "center"; // Add this line
+                        box.style.alignItems = "center"; // Add this line
+                        turn = "true";
+                        // Update turn display
+                        document.querySelector('.player-box.left').style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                        document.querySelector('.player-box.right').style.backgroundColor = 'transparent';
+                    }
+                    
+                    box.disabled = true;
+                    checkwin();
                 }
-                box.disabled = true;
-                checkwin();  // Note the corrected function name
             });
         });
 
